@@ -17,7 +17,7 @@ python -m http.server 8000
 http://localhost:8000/index.html
 
 5. Then you can see the carbon credit token website
-![替代文本](./sample.jpg "可选标题")
+![sample](./sample.jpg )
 
 
 # 碳信用 RWA 管理平台介绍（中文）
@@ -140,6 +140,7 @@ http://localhost:8000/index.html
 ## 许可证
 
 MIT License
+
 
 
 
