@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Credit Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Carbon Credit Management System</h1>
+            <div class="wallet-info">
+                <button id="connectBtn" class="btn btn-primary">Connect MetaMask</button>
+                <div id="walletAddress" class="wallet-address" style="display: none;">
+                    <span id="walletAddressText"></span>
+                    <button onclick="disconnectWallet()" class="btn btn-secondary">Disconnect</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn" data-tab="batches">Batch Management</button>
+            <button class="tab-btn" data-tab="mint">Mint Tokens</button>
+            <button class="tab-btn" data-tab="retire">Retire & Burn</button>
+            <button class="tab-btn" data-tab="transfer">Transfer</button>
+            <button class="tab-btn" data-tab="admin">Admin</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="tab-content active" id="dashboard">
+            <h2>Dashboard</h2>
+            
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>My Balances</h3>
+                    <div id="myBalances" class="balances-list">
+                        <p>Please connect wallet first...</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Contract Status</h3>
+                    <div id="contractStatus">
+                        <p>Please connect wallet first...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Query Batch Information</h3>
+                <input type="number" id="queryBatchId" class="input" placeholder="Enter Batch ID">
+                <button onclick="queryBatch()" class="btn btn-primary">Query</button>
+                <div id="batchInfo" class="batch-info"></div>
+            </div>
+
+            <div class="card">
+                <h3>Query Address Balance</h3>
+                <p><small>Query any address balance for a specific batch</small></p>
+                <input type="text" id="queryAddress" class="input" placeholder="Enter Address (0x...)">
+                <input type="number" id="queryBalanceBatchId" class="input" placeholder="Enter Batch ID">
+                <button onclick="queryAddressBalance()" class="btn btn-primary">Query Balance</button>
+                <div id="addressBalanceInfo" class="batch-info"></div>
+            </div>
+        </div>
+
+        <!-- Batch Management -->
+        <div class="tab-content" id="batches">
+            <h2>Batch Management</h2>
+
+            <div class="card">
+                <h3>Create Batch</h3>
+                <p><small>Requires authorized verification body permission</small></p>
+                <input type="text" id="projectName" class="input" placeholder="Project Name (e.g., Yunnan Solar Power Station)">
+                <input type="number" id="totalEmissionReduction" class="input" placeholder="Total Emission Reduction (tons CO₂)">
+                <input type="number" id="expiryDate" class="input" placeholder="Expiry Date (Unix timestamp, 0 for permanent)">
+                <input type="text" id="verificationDocHash" class="input" placeholder="Batch Hash">
+                <button onclick="createBatch()" class="btn btn-primary">Create Batch</button>
+            </div>
+
+            <div class="card">
+                <h3>Verify Batch</h3>
+                <p><small>Must be the batch creator</small></p>
+                <input type="number" id="verifyBatchId" class="input" placeholder="Batch ID">
+                <button onclick="verifyBatch()" class="btn btn-success">Verify Batch</button>
+            </div>
+
+            <div class="card">
+                <h3>All Batches</h3>
+                <button onclick="loadAllBatches()" class="btn btn-primary" style="margin-bottom: 15px;">Refresh List</button>
+                <div id="allBatches" class="batches-list">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mint Tokens -->
+        <div class="tab-content" id="mint">
+            <h2>Mint Tokens</h2>
+            <div class="card">
+                <h3>Mint Carbon Credit Tokens</h3>
+                <p><small>Requires contract owner permission, batch must be verified and not expired</small></p>
+                <input type="text" id="mintTo" class="input" placeholder="Recipient Address">
+                <input type="number" id="mintBatchId" class="input" placeholder="Batch ID">
+                <input type="number" id="mintAmount" class="input" placeholder="Mint Amount (tons CO₂)">
+                <button onclick="mintCarbonCredit()" class="btn btn-primary">Mint Tokens</button>
+            </div>
+        </div>
+
+        <!-- Retire & Burn -->
+        <div class="tab-content" id="retire">
+            <h2>Retire & Burn</h2>
+            <div class="card">
+                <h3>Retire and Burn Carbon Credits</h3>
+                <p><small>For ESG offset, permanently destroyed and cannot be recovered</small></p>
+                <input type="number" id="retireBatchId" class="input" placeholder="Batch ID">
+                <input type="number" id="retireAmount" class="input" placeholder="Retire Amount (tons CO₂)">
+                <input type="text" id="esgReportRef" class="input" placeholder="ESG Report Reference (optional)">
+                <button onclick="retireAndBurn()" class="btn btn-danger">Retire & Burn</button>
+            </div>
+        </div>
+
+        <!-- Transfer -->
+        <div class="tab-content" id="transfer">
+            <h2>Transfer</h2>
+            <div class="card">
+                <h3>Transfer Carbon Credits</h3>
+                <input type="text" id="transferTo" class="input" placeholder="Recipient Address">
+                <input type="number" id="transferBatchId" class="input" placeholder="Batch ID">
+                <input type="number" id="transferAmount" class="input" placeholder="Transfer Amount (tons CO₂)">
+                <button onclick="transferCarbonCredit()" class="btn btn-primary">Transfer</button>
+            </div>
+        </div>
+
+        <!-- Admin -->
+        <div class="tab-content" id="admin">
+            <h2>Admin Functions</h2>
+
+            <div class="card">
+                <h3>Permission Status</h3>
+                <div id="permissionStatus">
+                    <p>Please connect wallet first...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Authorize Verification Body</h3>
+                <p><small>Requires contract owner permission</small></p>
+                <input type="text" id="authorizeAddress" class="input" placeholder="Verification Body Address">
+                <button onclick="authorizeVerificationBody()" class="btn btn-primary">Authorize</button>
+            </div>
+
+            <div class="card">
+                <h3>Contract Ownership</h3>
+                <div id="ownershipInfo">
+                    <p>Loading ownership information...</p>
+                </div>
+                <p><small>Requires contract owner permission</small></p>
+                <input type="text" id="newOwnerAddress" class="input" placeholder="New Owner Address (0x...)">
+                <button onclick="transferOwnership()" class="btn btn-warning">Transfer Ownership</button>
+                <button onclick="renounceOwnership()" class="btn btn-danger" style="margin-top: 10px;">Renounce Ownership</button>
+            </div>
+
+            <div class="card">
+                <h3>Contract Control</h3>
+                <p><small>Requires contract owner permission</small></p>
+                <button onclick="pauseContract()" class="btn btn-warning">Pause Contract</button>
+                <button onclick="unpauseContract()" class="btn btn-success">Unpause Contract</button>
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
